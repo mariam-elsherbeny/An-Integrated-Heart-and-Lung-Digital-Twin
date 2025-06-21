@@ -1,0 +1,60 @@
+#patients-container {
+    max-width: 1000px;
+    margin: 120px auto 40px;
+    background: #1e272e;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 14px rgba(125, 185, 232, 0.35);
+    /* blue shadow */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-color);
+}
+
+#patients-ul {
+    width: 100%;
+    max-width: 1000px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    padding: 0;
+    list-style: none;
+    margin: 10px 0 0;
+    justify-content: center;
+}
+
+#patients-ul li {
+    width: 150px;
+    height: 150px;
+    background-color: #2c3e50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #7db9e8;
+    /* default blue text */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(125, 185, 232, 0.5);
+    /* blue glow */
+}
+
+#patients-ul li:hover {
+    background-color: #3b2e5a;
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(125, 185, 232, 0.7);
+    /* stronger blue glow */
+    color: #a6d4fa;
+    /* lighter blue on hover */
+}
+
+#patients-ul li.active {
+    color: #ff5e57;
+    /* bright red text */
+    box-shadow: 0 8px 15px rgba(255, 94, 87, 0.7);
+    /* red glow */
+}
