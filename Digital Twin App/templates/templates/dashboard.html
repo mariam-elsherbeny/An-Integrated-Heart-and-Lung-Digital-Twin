@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Dashboard | Heart and Lung Digital Twin</title>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pastel1: "#f5f6f8",
+            pastel2: "#ecf0f3",
+            pastel3: "#b3d6e7",
+            pastel4: "#abcbdd",
+            pastel5: "#f0f9ff",
+          },
+          animation: {
+            pulseFast: "pulse 1s infinite",
+            blob: "blob 10s infinite ease-in-out",
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .glass {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes blob {
+
+      0%,
+      100% {
+        transform: translate(0px, 0px) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -20px) scale(1.1);
+      }
+
+      66% {
+        transform: translate(-20px, 30px) scale(0.9);
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-pastel1 text-gray-800 font-sans min-h-screen relative overflow-y-auto p-6">
+
+  <!-- Animated Blobs Background -->
+  <div class="fixed inset-0 z-0 overflow-hidden">
+    <div
+      class="fixed w-80 h-80 bg-pastel3 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob top-10 left-10">
+    </div>
+    <div
+      class="fixed w-96 h-96 bg-pastel4 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000 top-40 right-10">
+    </div>
+    <div
+      class="fixed w-72 h-72 bg-pastel5 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000 bottom-10 left-1/2 -translate-x-1/2">
+    </div>
+  </div>
+
+  <!-- Floating Buttons -->
+  <a id="backToPatients"
+    class="fixed top-6 right-6 w-44 text-center bg-pastel4 text-white px-4 py-2 rounded-full shadow-md hover:bg-pastel3 transition">
+    ← Back to Patients
+  </a>
+  <a id="toSimulation"
+    class="fixed top-20 right-6 w-44 text-center bg-pastel4 text-white px-4 py-2 rounded-full shadow-md hover:bg-pastel3 transition">
+    ← Digital Twin
+  </a>
+
+  <main class="z-10 relative space-y-8 max-w-5xl mx-auto">
+    <!-- Demographics -->
+    <section class="glass p-6 rounded-3xl shadow-xl">
+      <h2 class="text-2xl font-bold text-pastel4 mb-4">Demographics</h2>
+      <div id="demographics" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- Blood Tests -->
+    <section class="glass p-6 rounded-3xl shadow-xl">
+      <h2 class="text-2xl font-bold text-pastel4 mb-4">Recent Blood Tests</h2>
+      <div id="blood-tests" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- Medical History -->
+    <section class="glass p-6 rounded-3xl shadow-xl space-y-6">
+      <h2 class="text-2xl font-bold text-pastel4 mb-2">Medical History</h2>
+      <div id="medical-history" class="space-y-4"></div>
+    </section>
+
+    <!-- Medical Images -->
+    <section class="glass p-6 rounded-3xl shadow-xl">
+      <h2 class="text-2xl font-bold text-pastel4 mb-4">Medical Images</h2>
+      <div class="mb-6">
+        <p><strong>MRI - Heart</strong></p>
+        <img id="patient-image" src="" alt="Patient Image" class="rounded-xl shadow w-72 mt-2" />
+      </div>
+    </section>
+  </main>
+
+  <footer class="z-10 relative mt-8 text-sm text-gray-500 text-center">
+    &copy; 2025 BeatBreath Team
+  </footer>
+
+  <script>
+    async function fetchPatientDetails() {
+      const params = new URLSearchParams(window.location.search);
+      const doctorId = params.get("doctorid") || params.get("doctor_id");
+      const patientId = params.get("patient_id");
+
+      if (!patientId) {
+        document.getElementById("demographics").innerHTML = '<div class="text-red-500">No patient selected</div>';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/patient/${patientId}`);
+        const patient = await response.json();
+
+        if (response.ok) {
+          // MRI image
+          const patientImage = document.getElementById("patient-image");
+          if (patient.mri) {
+            patientImage.src = `/static/images/${patient.mri}`;
+          }
+
+          // Set navigation links with doctor ID and MRI if available
+          if (doctorId) {
+            document.getElementById("backToPatients").href = `/patients?doctor_id=${doctorId}`;
+            document.getElementById("toSimulation").href =
+              `/simulation?doctor_id=${doctorId}` +
+              `&patient_id=${patientId}` +
+              (patient.mri ? `&mri=${encodeURIComponent(patient.mri)}` : "");
+          }
+
+          // Demographics
+          document.getElementById("demographics").innerHTML = `
+            <div class="space-y-2">
+              <p><strong>Name:</strong> ${patient.name}</p>
+              <p><strong>Age:</strong> ${patient.age}</p>
+              <p><strong>Gender:</strong> ${patient.sex}</p>
+              <p><strong>Weight:</strong> ${patient.weight} kg</p>
+              <p><strong>Blood Type:</strong> ${patient.blood_type}</p>
+              <p><strong>Contact:</strong> ${patient.contact}</p>
+            </div>
+          `;
+
+          // Blood Tests
+          document.getElementById("blood-tests").innerHTML = `
+            <div class="space-y-2">
+              <p><strong>WBC Count:</strong> ${patient.white_cells} cells/µL (Normal)</p>
+              <p><strong>Cholesterol:</strong> ${patient.cholesterol} mg/dL (Borderline High)</p>
+              <p><strong>Glucose (Fasting):</strong> ${patient.glucose} mg/dL (Normal)</p>
+              <p><strong>Urea:</strong> ${patient.urea} mmol/L </p>
+            </div>
+          `;
+
+          // Medical History
+          document.getElementById("medical-history").innerHTML = `
+            <div class="bg-white/30 p-4 rounded-xl border-l-4 border-pastel3">
+              <h3 class="text-lg font-semibold mb-1">Family History</h3>
+              <p>${patient.family_history}</p>
+            </div>
+          `;
+        } else {
+          document.getElementById("demographics").innerHTML = `<div class="text-red-500">${patient.error || "Failed to load patient details"}</div>`;
+        }
+      } catch (err) {
+        document.getElementById("demographics").innerHTML = '<div class="text-red-500">Failed to load patient details</div>';
+      }
+    }
+
+    window.onload = fetchPatientDetails;
+  </script>
+</body>
+
+</html>
