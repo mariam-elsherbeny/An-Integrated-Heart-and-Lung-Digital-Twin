@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Heart & Lung Simulation</title>
+  <link rel="stylesheet" href="/static/3Ds.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pastel1: "#f5f6f8",
+            pastel2: "#ecf0f3",
+            pastel3: "#b3d6e7",
+            pastel4: "#abcbdd",
+            pastel5: "#f0f9ff",
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #f5f6f8;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .model-select {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid #b3d6e7;
+      outline: none;
+    }
+
+    .control-section {
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin-bottom: 1.5rem;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .control-section h3 {
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: #49788C;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    .title-shadow {
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+    }
+
+    .hover-glow:hover {
+      color: #49788C;
+      text-shadow: 0 0 6px rgba(179, 214, 231, 0.8);
+    }
+  </style>
+</head>
+
+<body class="text-gray-800 m-0 p-0 overflow-hidden">
+
+  <!-- NAVBAR -->
+    <nav class="w-full absolute top-0 left-0 z-50">
+        <div class="relative h-16 w-full flex items-center justify-center">
+        <!-- Title centered -->
+        <span
+            class="absolute left-1/2 transform -translate-x-1/2 text-xl md:text-2xl font-bold text-pastel3 title-shadow hover-glow transition">
+            Heart & Lung Digital Twin
+        </span>
+        <!-- Button on right -->
+        <button id="todashboard"
+            class="absolute right-4 bg-pastel4 text-white px-5 py-2 rounded-full shadow hover:bg-pastel3 transition">
+            ← Dashboard
+        </button>
+        </div>
+    </nav>
+
+  
+    <!-- Fullscreen Simulation Container -->
+    <div id="container3D" class="w-screen h-screen" aria-label="Interactive 3D heart model"></div>
+  
+    <!-- Floating Panel for Parameters -->
+    <div id="floating-params-panel" class="fixed top-20 right-8 z-50 w-80 max-w-full glass shadow-lg rounded-xl p-5 text-sm text-gray-900 backdrop-blur-lg border border-pastel3" style="min-width:260px;">
+      <h3 class="font-bold text-lg mb-2 text-pastel3">Live Patient Data</h3>
+      <div id="params-list">
+        <!-- Dynamic content will be injected here -->
+        <div class="text-center text-gray-400">Loading...</div>
+      </div>
+      <div class="mt-4">
+        <div class="flex items-center gap-2">
+          <span class="font-semibold">Heart:</span>
+          <span id="heart-condition" class="font-bold">-</span>
+        </div>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="font-semibold">Lung:</span>
+          <span id="lung-condition" class="font-bold">-</span>
+        </div>
+      </div>
+    </div>
+    <!-- End Floating Panel -->
+  
+    <!-- Footer (optional) -->
+    <footer class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-center text-sm text-white/80 z-30">
+      &copy; 2025 BeatBreath Team | <i class="fas fa-heart text-pastel3"></i>
+    </footer>
+  
+    <!-- Scripts -->
+    <script type="module" src="/static/js/3d.js"></script>
+  </body>
+  
+</html>
